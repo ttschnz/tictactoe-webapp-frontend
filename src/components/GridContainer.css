@@ -1,0 +1,6 @@
+.GridContainer {
+    display: grid;
+}
+.GridContainer.FullWidth {
+    width: 100%;
+}

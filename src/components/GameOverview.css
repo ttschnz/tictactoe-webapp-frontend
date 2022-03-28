@@ -1,0 +1,18 @@
+.GameTile-Attacker,
+.GameTile-Defender {
+    justify-content: space-between;
+}
+.GameTile-GameHeading {
+    position: relative;
+}
+.GameTile-ContinueGameButton {
+    position: absolute;
+    right: 0;
+}
+.Tile.MainTile[data-path="/games"],
+.Tile.MainTile[data-path="/games/"] {
+    box-shadow: none;
+    background: none;
+    border-radius: 0;
+    width: 100%;
+}

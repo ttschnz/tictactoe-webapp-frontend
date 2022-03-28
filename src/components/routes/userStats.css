@@ -1,0 +1,26 @@
+.UserStats {
+    min-height: unset;
+    width: 100%;
+    background: hsl(calc(var(--hue) + 0deg) 20% 50%);
+    color: white !important;
+}
+.UserStatsParts {
+    justify-content: space-evenly;
+}
+.UserStatsPart-Name {
+    font-size: 0.8em;
+    margin: 0;
+    font-weight: normal;
+}
+
+.UserStatsPart-Value {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.Tile.MainTile[data-path^="/users/"] {
+    box-shadow: none;
+    background: none;
+    border-radius: 0;
+    width: 100%;
+}

@@ -1,0 +1,12 @@
+.NewGame-OptionTile {
+    min-width: unset;
+    min-height: unset;
+    padding: 20px;
+    height: 100px;
+    width: 100px;
+    cursor: pointer;
+    user-select: none;
+}
+.NewGame-OptionTile-Content {
+    height: 100%;
+}

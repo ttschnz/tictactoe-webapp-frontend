@@ -1,0 +1,9 @@
+.Logo img {
+    height: 80%;
+}
+.Logo {
+    height: var(--navHeight);
+    display: flex;
+    align-items: center;
+    user-select: none;
+}

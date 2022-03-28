@@ -1,0 +1,26 @@
+.FlexContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+.FlexContainer-NoWrap {
+    flex-wrap: nowrap;
+}
+.FlexContainer-Column {
+    flex-direction: column;
+}
+.FlexContainer-Row {
+    flex-direction: row;
+}
+.FlexContainer-Centered-Horizontally,
+/* .FlexContainer-Centered-Horizontally.FlexContainer-Row,  => default */
+.FlexContainer-Centered-Vertically.FlexContainer-Column {
+    justify-content: center;
+}
+.FlexContainer-Centered-Vertically,
+/* .FlexContainer-Centered-Vertically.FlexContainer-Row,  => default*/
+.FlexContainer-Centered-Horizontally.FlexContainer-Column {
+    align-items: center;
+}
+.FlexContainer.FullWidth {
+    width: 100%;
+}

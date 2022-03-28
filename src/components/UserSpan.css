@@ -1,0 +1,6 @@
+.UserSpan:not(.UserSpan-GuestUser) {
+    text-decoration: underline !important;
+}
+.UserSpan-Loading {
+    width: 50px;
+}
