@@ -68,7 +68,7 @@ class SortableTable extends React.Component<
                 {this.props.columns.map((column: any) => (
                     <th
                         className="SortableTable-Heading-Cell"
-                        key={column.name}
+                        key={column.selector}
                         onClick={() =>
                             this.setState({
                                 sortBy: column.selector,
@@ -144,7 +144,7 @@ class SortableTable extends React.Component<
         else
             return [
                 // if there is no data, return a loading spinner
-                <tr>
+                <tr key="loading">
                     <td>
                         <Loading />
                     </td>
