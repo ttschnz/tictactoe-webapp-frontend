@@ -6,7 +6,6 @@ import Heading from "../Heading";
 import GameField from "../GameField";
 import { GameMetaData, PostGameInfo } from "../../utils/types";
 import UserSpan from "../UserSpan";
-import { getCredentials } from "../../api/credentials";
 import Button from "../Button";
 import "../GameOverview.css";
 import { api } from "../../api/apiService";
@@ -14,6 +13,7 @@ import Loading from "../Loading";
 import uniquify from "../../utils/uniquify";
 import { gameIdToHex } from "../../utils/gameUtils";
 import Space from "../Space";
+import { hasAccessToGame } from "./Game";
 
 /**
  * A component that renders a game overview.
@@ -187,12 +187,8 @@ export function getGameState(
  * Determines whether a game is played by the current user and if so returns a button to continue the game
  */
 export function getContinueButton(gameInfo: PostGameInfo) {
-    const credentials = getCredentials();
     if (
-        !gameInfo.isFinished &&
-        credentials &&
-        (credentials.username === gameInfo.attacker ||
-            credentials.username === gameInfo.defender)
+        hasAccessToGame(gameInfo.gameId, gameInfo.attacker, gameInfo.defender)
     ) {
         return (
             <div className="GameTile-ContinueGameButton">
@@ -236,6 +232,7 @@ export function createGameTile(gameInfo: PostGameInfo) {
                             sizeUnit="px"
                             gameId={gameInfo.gameId}
                             useNewSocket={false}
+                            editable={false}
                         />
                     </Link>
                 </FlexContainer>

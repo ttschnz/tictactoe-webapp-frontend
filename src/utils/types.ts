@@ -49,7 +49,7 @@ export interface PostGameInfo {
 export interface GameMetaData {
     players: {
         attacker?: string | null;
-        defender?: string;
+        defender?: string | null;
     };
     gameState: {
         finished?: boolean;

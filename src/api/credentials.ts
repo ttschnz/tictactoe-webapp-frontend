@@ -3,7 +3,7 @@ import { Credentials } from "../utils/types";
 import { api } from "./apiService";
 /**
  * Credentials service
- * check if credentials are valid.
+ * check if credentials are valid. if they are invalid, remove them from local storage
  */
 export async function checkCredentials() {
     const credentials = getCredentials();
@@ -47,7 +47,7 @@ export function getCredentials(): Credentials | false {
 /**
  * sets the credentials in localStorage. if the credentials are false, it removes them from localStorage
  */
-export function setCredentials(value: Credentials | false) {
+export async function setCredentials(value: Credentials | false) {
     if (!value) {
         localStorage.removeItem("token");
         localStorage.removeItem("tokenExpiration");
@@ -62,7 +62,8 @@ export function setCredentials(value: Credentials | false) {
             "inCompetition",
             JSON.stringify(value.inCompetition)
         );
-        checkCredentials();
+        console.log("credentials are valid:", await checkCredentials());
+        credentialChange.next(getCredentials());
     }
 }
 

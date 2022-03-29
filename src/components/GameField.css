@@ -32,3 +32,11 @@
     transition: background 0.33s;
     position: relative;
 }
+
+.GameTile-Editable:not([data-occupied-by="o"]):not([data-occupied-by="x"]) {
+    cursor: pointer;
+}
+
+.GameTile-Editable:not([data-occupied-by="o"]):not([data-occupied-by="x"]):hover {
+    background-color: #0000002b;
+}

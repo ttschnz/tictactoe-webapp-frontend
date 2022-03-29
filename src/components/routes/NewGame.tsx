@@ -14,6 +14,7 @@ import ErrorSpan from "../ErrorSpan";
 import Button from "../Button";
 import { api } from "../../api/apiService";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+import { gameIdFromHex } from "../../utils/gameUtils";
 /**
  * A component that displays a form for creating a new game.
  * @component
@@ -145,7 +146,10 @@ class NewGame extends React.Component<
         console.log("response for starting new game", response);
         if (response.success) {
             if (response.data.gameKey)
-                addGameKey(response.data.gameKey, response.data.gameId);
+                addGameKey(
+                    response.data.gameKey,
+                    gameIdFromHex(response.data.gameId)
+                );
             let gameId = response.data.gameId;
             this.props.navigation(`/games/${gameId}`);
         }

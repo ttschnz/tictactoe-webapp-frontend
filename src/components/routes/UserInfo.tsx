@@ -23,6 +23,7 @@ export function parseUsername(username: string): string {
 
 /**
  * A component that displays a user's stats.
+ * TODO: update the games when user changes. currently the games don't update
  * @component
  * @hideconstructor
  */
@@ -35,23 +36,10 @@ class UserInfo extends React.Component<
         // initialize state with empty values
         this.state = { games: undefined, userFound: undefined };
     }
-    async componentDidMount() {
-        // get the user's games
-        let response = await api(
-            `/users/${parseUsername(this.props.username)}`
-        );
-        // if the user was found
-        if (response.success) {
-            // set the state to the user's games
-            this.setState({
-                games: response.data.games,
-                userFound: true,
-            });
-        } else {
-            // if the user was not found, display an error
-            this.setState({ userFound: false });
-        }
+    componentDidMount() {
+        this.updateGames();
     }
+
     // render the component
     render(): React.ReactNode {
         return (
@@ -67,6 +55,23 @@ class UserInfo extends React.Component<
                 {this.state.userFound === false && this.getNotFound()}
             </FlexContainer>
         );
+    }
+    async updateGames() {
+        // get the user's games
+        let response = await api(
+            `/users/${parseUsername(this.props.username)}`
+        );
+        // if the user was found
+        if (response.success) {
+            // set the state to the user's games
+            this.setState({
+                games: response.data.games,
+                userFound: true,
+            });
+        } else {
+            // if the user was not found, display an error
+            this.setState({ userFound: false });
+        }
     }
     // returns an error message saying the user was not found
     getNotFound(): React.ReactNode {
@@ -105,6 +110,7 @@ class UserInfo extends React.Component<
     }
     // returns a list of games
     getGames(): React.ReactNode[] {
+        // this.updateGames();
         // display a loading icon if the games are not loaded yet
         if (this.state.games === undefined) return [<Loading key="loading" />];
         // if the user has no games, display a message saying so

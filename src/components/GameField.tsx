@@ -1,4 +1,5 @@
-import React from "react";
+import classNames from "classnames";
+import React, { SyntheticEvent } from "react";
 import WebSocketConnection from "../api/apiService";
 import { gameIdToHex, parseMoves } from "../utils/gameUtils";
 import { PositionIndex, PostGameInfo, SocketResponse } from "../utils/types";
@@ -15,12 +16,20 @@ class GameTile extends React.Component<{
     value?: PostGameInfo["gameField"][0];
     // the index of the tile
     index: PositionIndex;
+    editable: boolean;
     makeMove: Function;
 }> {
+    constructor(props: any) {
+        super(props);
+        this.makeMove = this.makeMove.bind(this);
+    }
     render(): JSX.Element {
         return (
             <div
-                className="GameTile"
+                className={classNames(
+                    "GameTile",
+                    this.props.editable && "GameTile-Editable"
+                )}
                 // set the occupier of the tile to the dataset
                 data-occupied-by={
                     occupierMap[
@@ -34,8 +43,13 @@ class GameTile extends React.Component<{
                 data-value={this.props.value}
                 // set the index of the tile to the dataset
                 data-index={this.props.index}
+                onClick={this.makeMove}
             ></div>
         );
+    }
+    makeMove(e: SyntheticEvent) {
+        console.log(this.props.index);
+        this.props.makeMove(this.props.index);
     }
 }
 
@@ -50,6 +64,7 @@ class GameField extends React.Component<{
     sizeUnit: "vh" | "vw" | "%" | "px";
     gameId: number;
     useNewSocket: boolean;
+    editable: boolean;
 }> {
     socket?: WebSocketConnection;
     socketRefresh?: NodeJS.Timer;
@@ -126,16 +141,20 @@ class GameField extends React.Component<{
     }
     // make a move on the game field and send it to the server
     async makeMove(index: PositionIndex): Promise<boolean> {
-        return (
-            // send the move to the server via the websocket
-            (
-                (await this.socket?.send(
-                    "makeMove",
-                    { movePosition: index, gameId: this.props.gameId },
-                    true
-                )) as SocketResponse
-            ).success
-        );
+        console.log(this.props.editable, index);
+        if (this.props.editable) {
+            console.log("making move", index);
+            return (
+                // send the move to the server via the websocket
+                (
+                    (await this.socket?.send(
+                        "makeMove",
+                        { movePosition: index, gameId: this.props.gameId },
+                        true
+                    )) as SocketResponse
+                ).success
+            );
+        } else return false;
     }
     getGameTiles(): JSX.Element[] {
         // map the game field to the game tiles and return them
@@ -146,6 +165,7 @@ class GameField extends React.Component<{
                 // set the index of the tile to the index of the game field
                 index={index as PositionIndex}
                 makeMove={this.makeMove}
+                editable={this.props.editable}
             />
         ));
     }

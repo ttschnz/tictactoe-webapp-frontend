@@ -18,7 +18,11 @@ import Error404 from "./routes/Error404";
 import HomeLink from "./HomeLink";
 import Tile from "./Tile";
 
-import { getCredentials, setCredentials } from "../api/credentials";
+import {
+    checkCredentials,
+    getCredentials,
+    setCredentials,
+} from "../api/credentials";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {
     credentialChange,
@@ -42,14 +46,16 @@ class App extends React.Component<
         popups: { [key: string]: string };
         error: any;
         credentials: Credentials | false;
+        wasSignedOut: boolean;
     }
 > {
     subscriptions: { [key: string]: Subscription } = {};
-
+    timeOuts: NodeJS.Timeout[] = [];
     constructor(props: any) {
         super(props);
         // if the credentials are not set, set them to false just to be sure
         if (!getCredentials()) setCredentials(false);
+        checkCredentials();
         // bind the functions to this
         this.showError = this.showError.bind(this);
         this.removeError = this.removeError.bind(this);
@@ -59,6 +65,7 @@ class App extends React.Component<
             error: false,
             popups: {},
             credentials: getCredentials(),
+            wasSignedOut: false,
         };
     }
 
@@ -83,9 +90,18 @@ class App extends React.Component<
             this.subscriptions.errorResolve.unsubscribe();
         if (this.subscriptions.credentials)
             this.subscriptions.credentials.unsubscribe();
+        this.timeOuts.map((timeout) => clearTimeout(timeout));
     }
     handleCredentialsChange() {
-        this.setState({ credentials: getCredentials() });
+        const wasSignedOut = getCredentials() === false;
+        if (wasSignedOut)
+            this.timeOuts.push(
+                setTimeout(() => this.setState({ wasSignedOut: false }), 5000)
+            );
+        this.setState({
+            credentials: getCredentials(),
+            wasSignedOut,
+        });
     }
     /**
      * adds a new error to the state which will be rendered as <Popup />[]
@@ -166,7 +182,7 @@ class App extends React.Component<
                                         ) : null
                                     }
                                 />
-                                <Route path="*" />
+                                <Route path="*" element={null} />
                             </Routes>
                         </>
                         {/* primary elements */}
@@ -249,6 +265,9 @@ class App extends React.Component<
                                 <Route path="*" element={<Error404 />} />
                             </Routes>
                         </Tile>
+                        {this.state.wasSignedOut && (
+                            <InfoTile>You were signed out.</InfoTile>
+                        )}
                     </main>
                     <Footer></Footer>
                     {/* render the popups */}
