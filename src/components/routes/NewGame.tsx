@@ -18,6 +18,7 @@ class NewGame extends React.Component {
     }
 
     render(): React.ReactNode {
+        // return the component with the options for the game
         return (
             <FlexContainer direction="column" gap={10}>
                 <FlexContainer direction="column" gap={10}>
@@ -26,13 +27,16 @@ class NewGame extends React.Component {
                 </FlexContainer>
                 <Space height={20} />
                 <FlexContainer direction="row" verticalCenter horizontalCenter>
+                    {/* create a tile for each opponent */}
                     {this.options()}
                 </FlexContainer>
             </FlexContainer>
         );
     }
     options(): React.ReactNode[] {
+        // create a tile for each opponent
         return [
+            // play against the computer
             <Tile
                 className="NewGame-OptionTile"
                 onClick={this.handleClick}
@@ -49,6 +53,7 @@ class NewGame extends React.Component {
                     <span>Bot</span>
                 </FlexContainer>
             </Tile>,
+            // play against another player
             <Tile
                 className="NewGame-OptionTile"
                 onClick={this.handleClick}
@@ -67,14 +72,21 @@ class NewGame extends React.Component {
             </Tile>,
         ];
     }
+    // handle the click event when an option is selected
     handleClick(e: SyntheticEvent) {
         e.preventDefault();
+        // get the option that was selected
         let option = (e.currentTarget as HTMLElement).dataset.option as
             | "playBot"
             | "playPerson";
+        // emit the option to the parent component
         if (option === "playBot") {
+            // play against the computer
+            // TODO: implement
             console.log("playBot");
         } else if (option === "playPerson") {
+            // play against another player
+            // TODO: implement
             console.log("playPerson");
         }
     }

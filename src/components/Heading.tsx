@@ -1,59 +1,42 @@
 import classNames from "classnames";
 import React from "react";
-class Heading extends React.Component<
-    { level: 1 | 2 | 3 | 4 | 5 | 6; className?: string },
-    {}
-> {
-    render(): React.ReactNode {
-        switch (this.props.level) {
-            case 1:
-                return (
-                    <h1 className={this.props.className}>
-                        {this.props.children}
-                    </h1>
-                );
-            case 2:
-                return (
-                    <h2 className={this.props.className}>
-                        {this.props.children}
-                    </h2>
-                );
-            case 3:
-                return (
-                    <h3 className={this.props.className}>
-                        {this.props.children}
-                    </h3>
-                );
-            case 4:
-                return (
-                    <h4 className={this.props.className}>
-                        {this.props.children}
-                    </h4>
-                );
-            case 5:
-                return (
-                    <h5 className={this.props.className}>
-                        {this.props.children}
-                    </h5>
-                );
-            case 6:
-                return (
-                    <h6 className={this.props.className}>
-                        {this.props.children}
-                    </h6>
-                );
-        }
+/**
+ * A heading component that can be used to display a heading.
+ * @component
+ * @hideconstructor
+ */
+class Heading extends React.Component<{
+    /**
+     * The level of the heading.
+     */
+    level: 1 | 2 | 3 | 4 | 5 | 6;
+    /**
+     * The class name of the heading.
+     */
+    className?: string;
+}> {
+    render() {
+        return React.createElement(
+            `h${this.props.level}`,
+            {
+                className: classNames(
+                    "Heading",
+                    `Heading${this.props.level}`,
+                    this.props.className
+                ),
+            },
+            this.props.children
+        );
     }
 }
+
+/**
+ * A subheading component that can be used to display a subheading.
+ */
 class SubHeading extends React.Component<{ className?: string }> {
     render(): React.ReactNode {
         return (
-            <span
-                className={classNames({
-                    SubHeading: true,
-                    [this.props.className ?? ""]: true,
-                })}
-            >
+            <span className={classNames("SubHeading", this.props.className)}>
                 {this.props.children}
             </span>
         );

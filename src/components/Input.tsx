@@ -1,11 +1,34 @@
 import React from "react";
 import "./Input.css";
+/**
+ * A input component that can be used to display an input.
+ * @component
+ * @hideconstructor
+ */
 class Input extends React.Component<{
+    /**
+     * The label of the input.
+     */
     label: string;
+    /**
+     * The name of the input.
+     */
     name: string;
+    /**
+     * The type of the input.
+     */
     type?: string;
+    /**
+     * Whether the input is required.
+     */
     required?: boolean;
+    /**
+     * Whether autocomplete should be enabled.
+     */
     autoComplete?: string;
+    /**
+     * What the input should do when the value changes.
+     */
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }> {
     render(): React.ReactNode {

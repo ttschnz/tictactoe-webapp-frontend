@@ -12,6 +12,12 @@ import { api } from "../../api/apiService";
 import { Credentials } from "../../utils/types";
 import ErrorSpan from "../ErrorSpan";
 import FlexContainer from "../FlexContainer";
+
+/**
+ * A component that displays a signup form.
+ * @component
+ * @hideconstructor
+ */
 class SignUp extends React.Component<
     { navigation: NavigateFunction },
     {
@@ -23,18 +29,19 @@ class SignUp extends React.Component<
 > {
     constructor(props: any) {
         super(props);
+        // initialize state with empty values
         this.state = { email: "", password: "", username: "" };
-
+        // bind functions to this
         this.handleValueChange = this.handleValueChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     async handleSubmit(e: SyntheticEvent) {
-        // prevent default action to just reload the page
+        // prevent default action (reloading the page)
         e.preventDefault();
         // logging
         console.log("submitting form:", this.state);
 
-        // get values
+        // get values from state
         const { username, password, email } = this.state;
         // generate a random salt
         let salt = forge.random.getBytesSync(128);
@@ -53,6 +60,7 @@ class SignUp extends React.Component<
             key,
             salt,
         });
+        // if the response was unsuccessful, display an error
         if (!response.success)
             return this.setState({
                 error: "Failed to sign up. ",
@@ -73,32 +81,31 @@ class SignUp extends React.Component<
             this.props.navigation("/login");
         }
     }
-
+    // handle value changes in the form
     handleValueChange(e: SyntheticEvent) {
+        // get the target element
         const target = e.target as HTMLInputElement;
+        // get the value of the target element
         const value =
             target.type === "checkbox" ? String(target.checked) : target.value;
-        const name = target.name;
-
-        switch (name) {
-            case "email":
-                this.setState({ email: value });
-                break;
-            case "password":
-                this.setState({ password: value });
-                break;
-            case "username":
-                this.setState({ username: value });
-                break;
-        }
+        // get the name of the input field
+        const name = target.name as "email" | "username" | "password";
+        // update the state with the new value
+        this.setState({ [name]: value } as {
+            [key in "email" | "username" | "password"]: string;
+        });
     }
+
+    // render the component
     render(): React.ReactNode {
         return (
             <FlexContainer direction="column" gap={0}>
                 <form onSubmit={this.handleSubmit}>
+                    {/* heading */}
                     <Space height={22} />
                     <Heading level={1}>Sign up</Heading>
                     <Space height={22} />
+                    {/* email */}
                     <Input
                         label="E-Mail"
                         type="email"
@@ -106,6 +113,7 @@ class SignUp extends React.Component<
                         autoComplete="email"
                         onChange={this.handleValueChange}
                     ></Input>
+                    {/* username */}
                     <Input
                         label="Username"
                         type="text"
@@ -113,6 +121,7 @@ class SignUp extends React.Component<
                         autoComplete="username"
                         onChange={this.handleValueChange}
                     ></Input>
+                    {/* password */}
                     <Input
                         label="Password"
                         type="password"
@@ -120,17 +129,22 @@ class SignUp extends React.Component<
                         autoComplete="new-password"
                         onChange={this.handleValueChange}
                     ></Input>
+                    {/* submit button */}
                     <Button primary>Create Account</Button>
+                    {/* error */}
                     {this.state.error ? (
                         <ErrorSpan>{this.state.error}</ErrorSpan>
                     ) : null}
                 </form>
                 <LabeledDivider label="or" />
+                {/* login if you already have an account */}
                 <Button action="/login">Log in</Button>
             </FlexContainer>
         );
     }
 }
+
+// pass the navigation function to the component
 function _SignUp(props: {}) {
     const navigation = useNavigate();
     return <SignUp {...props} navigation={navigation} />;

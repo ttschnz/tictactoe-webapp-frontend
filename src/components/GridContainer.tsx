@@ -9,18 +9,22 @@ class GridContainer extends React.Component<
     },
     {}
 > {
+    // the gap between the tiles
     standartGap = 20;
     render(): React.ReactNode {
+        // add the className to the grid container
         let className = classNames({
             GridContainer: true,
             ...(this.props.className ? { [this.props.className]: true } : {}),
         });
+        // return the grid container
         return (
             <div className={className} style={this.getStyle()}>
                 {this.props.children}
             </div>
         );
     }
+    // get the style of the grid container
     getStyle(): React.CSSProperties {
         let styles = {
             "grid-template-rows": this.props.template.row ?? "",
