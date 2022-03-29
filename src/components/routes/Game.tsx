@@ -41,6 +41,7 @@ class Game extends React.Component<
             const gameMetaData = {
                 players: response.data.players,
                 gameState: response.data.gameState,
+                moves: response.data.moves,
             } as GameMetaData;
             // get the moves of the game
             const moves = response.data.moves as Move[];
@@ -103,6 +104,7 @@ class GameStats extends React.Component<
             const gameMetaData = {
                 players: response.data.players,
                 gameState: response.data.gameState,
+                moves: response.data.moves,
             } as GameMetaData;
             // update the players and gameState
             this.setState({
