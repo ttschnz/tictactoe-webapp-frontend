@@ -4,3 +4,8 @@
 .UserSpan-Loading {
     width: 50px;
 }
+.SortableTable span.UserSpan.UserSpan-CurrentUser {
+    /* background: #fff200; */
+    color: hsl(var(--hue), 70%, 30%);
+    font-weight: bold;
+}

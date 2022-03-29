@@ -1,3 +1,4 @@
 .MaterialIcon {
     font-family: "Material Icons" !important;
+    user-select: none;
 }

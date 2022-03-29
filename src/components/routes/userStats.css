@@ -4,6 +4,14 @@
     background: hsl(calc(var(--hue) + 0deg) 20% 50%);
     color: white !important;
 }
+@media only screen and (max-width: 550px) {
+    .UserStats {
+        background: hsl(calc(var(--hue) + 0deg) 20% 50%) !important;
+        padding-left: 30px !important;
+        padding-right: 30px !important;
+        border-radius: 0;
+    }
+}
 .UserStatsParts {
     justify-content: space-evenly;
 }

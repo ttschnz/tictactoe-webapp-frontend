@@ -10,3 +10,11 @@
 .NewGame-OptionTile-Content {
     height: 100%;
 }
+.NewGame-OptionTile-GreyedOut {
+    background: #00000014;
+    box-shadow: none;
+}
+
+.MainTile[data-path="/games/new"] {
+    width: min(400px, 80vw);
+}

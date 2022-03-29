@@ -122,12 +122,20 @@ class GameStats extends React.Component<
                 {/* display the current game state (ongoing, won, etc.) */}
                 <span>{getGameState(this.state.gameState)}</span>
                 {/* show who is attacking */}
-                <FlexContainer direction="row" key="gameAttacker">
+                <FlexContainer
+                    direction="row"
+                    key="gameAttacker"
+                    verticalCenter
+                >
                     <Heading level={3}>Attacker:</Heading>
                     <UserSpan username={this.state.players.attacker} />
                 </FlexContainer>
                 {/* show who is defending */}
-                <FlexContainer direction="row" key="gameDefender">
+                <FlexContainer
+                    direction="row"
+                    key="gameDefender"
+                    verticalCenter
+                >
                     <Heading level={3}>Defender:</Heading>
                     <UserSpan username={this.state.players.defender} />
                 </FlexContainer>

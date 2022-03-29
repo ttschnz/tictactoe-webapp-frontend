@@ -29,6 +29,8 @@ import Popup from "./Popup";
 import { Subscription } from "rxjs";
 import { Credentials } from "../utils/types";
 import { Navigate } from "react-router-dom";
+import InfoTile from "./InfoTile";
+import UserSpan from "./UserSpan";
 /**
  * The main application component.
  * @component
@@ -148,7 +150,23 @@ class App extends React.Component<
                                     path="/games/:gameId"
                                     element={<Game.GameStats />}
                                 />
-                                <Route path="*" element={null} />
+                                <Route
+                                    path="/"
+                                    element={
+                                        this.state.credentials ? (
+                                            <InfoTile>
+                                                Signed in as{" "}
+                                                <UserSpan
+                                                    username={
+                                                        this.state.credentials
+                                                            .username
+                                                    }
+                                                />
+                                            </InfoTile>
+                                        ) : null
+                                    }
+                                />
+                                <Route path="*" />
                             </Routes>
                         </>
                         {/* primary elements */}
