@@ -33,9 +33,9 @@
 }
 
 .SortableTable-Heading-Cell[data-current-sorting="ASC"]::after {
-    content: "arrow_drop_down";
+    content: "arrow_drop_up";
 }
 
 .SortableTable-Heading-Cell[data-current-sorting="DESC"]::after {
-    content: "arrow_drop_up";
+    content: "arrow_drop_down";
 }

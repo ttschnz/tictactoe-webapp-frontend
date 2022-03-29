@@ -12,16 +12,23 @@ import SignUp from "./routes/Signup";
 import UserInfo from "./routes/UserInfo";
 import UserOverview from "./routes/UserOverview";
 import GameOverview from "./routes/GameOverview";
+import Competition, { JoinCompetition } from "./routes/Competition";
+import JoinGame from "./routes/JoinGame";
 import Error404 from "./routes/Error404";
 import HomeLink from "./HomeLink";
 import Tile from "./Tile";
 
 import { getCredentials, setCredentials } from "../api/credentials";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { errorResolveSubject, errorSubject } from "../utils/subjects";
+import {
+    credentialChange,
+    errorResolveSubject,
+    errorSubject,
+} from "../utils/subjects";
 import Popup from "./Popup";
 import { Subscription } from "rxjs";
-
+import { Credentials } from "../utils/types";
+import { Navigate } from "react-router-dom";
 /**
  * The main application component.
  * @component
@@ -29,7 +36,11 @@ import { Subscription } from "rxjs";
  */
 class App extends React.Component<
     {},
-    { popups: { [key: string]: string }; error: any }
+    {
+        popups: { [key: string]: string };
+        error: any;
+        credentials: Credentials | false;
+    }
 > {
     subscriptions: { [key: string]: Subscription } = {};
 
@@ -40,14 +51,21 @@ class App extends React.Component<
         // bind the functions to this
         this.showError = this.showError.bind(this);
         this.removeError = this.removeError.bind(this);
+        this.handleCredentialsChange = this.handleCredentialsChange.bind(this);
         // set the initial state
         this.state = {
             error: false,
             popups: {},
+            credentials: getCredentials(),
         };
     }
 
     componentDidMount(): void {
+        this.setState({ credentials: getCredentials() });
+        // subscribe to credential changes
+        this.subscriptions.credentials = credentialChange.subscribe(
+            this.handleCredentialsChange
+        );
         // subscribe to error events
         this.subscriptions.error = errorSubject.subscribe({
             next: this.showError,
@@ -61,6 +79,11 @@ class App extends React.Component<
         if (this.subscriptions.error) this.subscriptions.error.unsubscribe();
         if (this.subscriptions.errorResolve)
             this.subscriptions.errorResolve.unsubscribe();
+        if (this.subscriptions.credentials)
+            this.subscriptions.credentials.unsubscribe();
+    }
+    handleCredentialsChange() {
+        this.setState({ credentials: getCredentials() });
     }
     /**
      * adds a new error to the state which will be rendered as <Popup />[]
@@ -119,6 +142,7 @@ class App extends React.Component<
                                 />
                                 {/* overwrite the game route to render nothing */}
                                 <Route path="/games/new" element={null} />
+                                <Route path="/games/join" element={null} />
                                 {/* render the games properties */}
                                 <Route
                                     path="/games/:gameId"
@@ -132,10 +156,47 @@ class App extends React.Component<
                             <Routes>
                                 {/* render the home page */}
                                 <Route path="/" element={<Home />} />
-                                {/* render the login page */}
-                                <Route path="/login" element={<Login />} />
-                                {/* render the signup page */}
-                                <Route path="/signup" element={<SignUp />} />
+                                {/* render the competition information page */}
+                                <Route
+                                    path="/competition"
+                                    element={<Competition />}
+                                />
+                                {/* render the competition join page if the user is not yet part of the competition */}
+                                <Route
+                                    path="/competition/join"
+                                    element={
+                                        this.state.credentials &&
+                                        !this.state.credentials
+                                            .inCompetition ? (
+                                            <JoinCompetition />
+                                        ) : (
+                                            // redirect to the competition page if the user is already part of the competition
+                                            <Navigate to="/competition" />
+                                        )
+                                    }
+                                />
+                                {/* render the login page if the user is not signed in */}
+                                <Route
+                                    path="/login"
+                                    element={
+                                        !this.state.credentials ? (
+                                            <Login />
+                                        ) : (
+                                            <Navigate to="/" />
+                                        )
+                                    }
+                                />
+                                {/* render the signup page if the user is not signed in */}
+                                <Route
+                                    path="/signup"
+                                    element={
+                                        !this.state.credentials ? (
+                                            <SignUp />
+                                        ) : (
+                                            <Navigate to="/" />
+                                        )
+                                    }
+                                />
                                 {/* render the user list */}
                                 <Route
                                     path="/users/"
@@ -150,6 +211,11 @@ class App extends React.Component<
                                 <Route
                                     path="/games/new"
                                     element={<NewGame />}
+                                />
+                                {/* render the join game page */}
+                                <Route
+                                    path="/games/join"
+                                    element={<JoinGame />}
                                 />
                                 {/* render the game page */}
                                 <Route

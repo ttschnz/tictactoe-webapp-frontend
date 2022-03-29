@@ -1,0 +1,3 @@
+.MainTile[data-path^="/competition"] {
+    width: min(400px, 80vw);
+}

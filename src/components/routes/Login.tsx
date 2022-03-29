@@ -1,13 +1,9 @@
 import React from "react";
 import forge from "node-forge";
 
-import Heading from "../Heading";
-import Space from "../Space";
-import Input from "../Input";
+import Form from "../Form";
 import Button from "../Button";
-import ErrorSpan from "../ErrorSpan";
 import LabeledDivider from "../LabeledDivider";
-import { SyntheticEvent } from "react";
 import { api } from "../../api/apiService";
 import { setCredentials } from "../../api/credentials";
 import { Credentials } from "../../utils/types";
@@ -34,26 +30,21 @@ class Login extends React.Component<
         this.state = { password: "", username: "", error: undefined };
 
         // bind functions
-        this.handleValueChange = this.handleValueChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     // handle submission of the form
-    async handleSubmit(e: SyntheticEvent) {
-        // prevent default action to just reload the page
-        e.preventDefault();
+    async handleSubmit(values: { [key: string]: string }) {
         // logging
-        console.log("submitting form:", this.state);
+        console.log("submitting form:", values);
 
         // get values
-        const { username, password } = this.state;
+        const { username, password } = values;
         // get the salt for the user
         const saltResponse = await api("/getsalt", {
             username,
         });
         if (!saltResponse.success)
-            return this.setState({
-                error: "Failed to log in. Please verify your username.",
-            });
+            return "Failed to log in. Please verify your username.";
 
         // decode the salt
         const salt = forge.util.hexToBytes(saltResponse.data);
@@ -68,9 +59,7 @@ class Login extends React.Component<
             key,
         });
         if (!loginResponse.success)
-            return this.setState({
-                error: "Failed to log in. Please verify your password.",
-            });
+            return "Failed to log in. Please verify your password.";
 
         // set the credentials in the local storage
         setCredentials({
@@ -82,63 +71,31 @@ class Login extends React.Component<
 
         // navigate to the home page
         this.props.navigation("/");
-    }
-
-    // handle value change for username and password
-    handleValueChange(e: SyntheticEvent) {
-        // get the target
-        const target = e.target as HTMLInputElement;
-        // get the value of the target
-        const value =
-            target.type === "checkbox" ? String(target.checked) : target.value;
-
-        // get the name of the target
-        const name = target.name;
-
-        // update the state
-        switch (name) {
-            case "password":
-                // update the password
-                this.setState({ password: value });
-                break;
-            case "username":
-                // update the username
-                this.setState({ username: value });
-                break;
-        }
+        return null;
     }
 
     render(): React.ReactNode {
         return (
             <FlexContainer direction="column" gap={0}>
-                <form onSubmit={this.handleSubmit}>
-                    <Space height={22} />
-                    {/* title */}
-                    <Heading level={1}>Log in</Heading>
-                    <Space height={22} />
-                    {/* username */}
-                    <Input
-                        label="Username"
-                        type="text"
-                        name="username"
-                        autoComplete="username"
-                        onChange={this.handleValueChange}
-                    ></Input>
-                    {/* password */}
-                    <Input
-                        label="Password"
-                        type="password"
-                        name="password"
-                        autoComplete="current-password"
-                        onChange={this.handleValueChange}
-                    ></Input>
-                    {/* submission button */}
-                    <Button primary>Log in</Button>
-                    {/* error */}
-                    {this.state.error ? (
-                        <ErrorSpan>{this.state.error}</ErrorSpan>
-                    ) : null}
-                </form>
+                <Form
+                    heading="Log in"
+                    onSubmit={this.handleSubmit}
+                    submit={{ label: "Log in" }}
+                    fields={{
+                        username: {
+                            label: "Username",
+                            type: "text",
+                            autoComplete: "username",
+                            required: true,
+                        },
+                        password: {
+                            label: "Password",
+                            type: "password",
+                            autoComplete: "current-password",
+                            required: true,
+                        },
+                    }}
+                />
                 <LabeledDivider label="or" />
                 {/* sign up button */}
                 <Button action="/signup">Create Account</Button>

@@ -1,8 +1,5 @@
-import React, { SyntheticEvent } from "react";
+import React from "react";
 
-import Space from "../Space";
-import Heading from "../Heading";
-import Input from "../Input";
 import Button from "../Button";
 import LabeledDivider from "../LabeledDivider";
 import { useNavigate, NavigateFunction } from "react-router-dom";
@@ -10,8 +7,8 @@ import { setCredentials } from "../../api/credentials";
 import forge from "node-forge";
 import { api } from "../../api/apiService";
 import { Credentials } from "../../utils/types";
-import ErrorSpan from "../ErrorSpan";
 import FlexContainer from "../FlexContainer";
+import Form from "../Form";
 
 /**
  * A component that displays a signup form.
@@ -32,17 +29,13 @@ class SignUp extends React.Component<
         // initialize state with empty values
         this.state = { email: "", password: "", username: "" };
         // bind functions to this
-        this.handleValueChange = this.handleValueChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-    async handleSubmit(e: SyntheticEvent) {
-        // prevent default action (reloading the page)
-        e.preventDefault();
+    async handleSubmit(values: { [key: string]: string }) {
         // logging
-        console.log("submitting form:", this.state);
-
-        // get values from state
-        const { username, password, email } = this.state;
+        console.log("submitting form:", values);
+        // get values
+        const { username, password, email } = values;
         // generate a random salt
         let salt = forge.random.getBytesSync(128);
 
@@ -61,10 +54,7 @@ class SignUp extends React.Component<
             salt,
         });
         // if the response was unsuccessful, display an error
-        if (!response.success)
-            return this.setState({
-                error: "Failed to sign up. ",
-            });
+        if (!response.success) return "Failed to sign up. Please try again.";
 
         // signup was successful, check if direct-login was enabled
         if (response.data.token) {
@@ -76,66 +66,43 @@ class SignUp extends React.Component<
                 inCompetition: response.data.inCompetition,
             } as Credentials);
             this.props.navigation("/");
+            return null;
         } else {
             // if only signup was made, go to login
             this.props.navigation("/login");
+            return null;
         }
-    }
-    // handle value changes in the form
-    handleValueChange(e: SyntheticEvent) {
-        // get the target element
-        const target = e.target as HTMLInputElement;
-        // get the value of the target element
-        const value =
-            target.type === "checkbox" ? String(target.checked) : target.value;
-        // get the name of the input field
-        const name = target.name as "email" | "username" | "password";
-        // update the state with the new value
-        this.setState({ [name]: value } as {
-            [key in "email" | "username" | "password"]: string;
-        });
     }
 
     // render the component
     render(): React.ReactNode {
         return (
             <FlexContainer direction="column" gap={0}>
-                <form onSubmit={this.handleSubmit}>
-                    {/* heading */}
-                    <Space height={22} />
-                    <Heading level={1}>Sign up</Heading>
-                    <Space height={22} />
-                    {/* email */}
-                    <Input
-                        label="E-Mail"
-                        type="email"
-                        name="email"
-                        autoComplete="email"
-                        onChange={this.handleValueChange}
-                    ></Input>
-                    {/* username */}
-                    <Input
-                        label="Username"
-                        type="text"
-                        name="username"
-                        autoComplete="username"
-                        onChange={this.handleValueChange}
-                    ></Input>
-                    {/* password */}
-                    <Input
-                        label="Password"
-                        type="password"
-                        name="password"
-                        autoComplete="new-password"
-                        onChange={this.handleValueChange}
-                    ></Input>
-                    {/* submit button */}
-                    <Button primary>Create Account</Button>
-                    {/* error */}
-                    {this.state.error ? (
-                        <ErrorSpan>{this.state.error}</ErrorSpan>
-                    ) : null}
-                </form>
+                <Form
+                    onSubmit={this.handleSubmit}
+                    heading="Sign up"
+                    submit={{ label: "Create Account" }}
+                    fields={{
+                        email: {
+                            label: "Email",
+                            type: "email",
+                            required: true,
+                            autoComplete: "email",
+                        },
+                        username: {
+                            label: "Username",
+                            type: "text",
+                            required: true,
+                            autoComplete: "username",
+                        },
+                        password: {
+                            label: "Password",
+                            type: "password",
+                            required: true,
+                            autoComplete: "new-password",
+                        },
+                    }}
+                />
                 <LabeledDivider label="or" />
                 {/* login if you already have an account */}
                 <Button action="/login">Log in</Button>

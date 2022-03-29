@@ -5,7 +5,7 @@ import Heading from "../Heading";
 import Logo from "../logo";
 import Space from "../Space";
 import LabeledDivider from "../LabeledDivider";
-import { getCredentials } from "../../api/credentials";
+import { getCredentials, setCredentials } from "../../api/credentials";
 import { credentialChange } from "../../utils/subjects";
 import { Subscription } from "rxjs";
 /**
@@ -80,30 +80,42 @@ class Home extends React.Component<
             return (
                 <FlexContainer direction="column" gap={10}>
                     <LabeledDivider label="Your Account" />
-                    <Button primary action="/games/new">
+                    <Button action="/games/new" primary>
                         New game
                     </Button>
-                    <Button>Join game</Button>
+                    <Button action="/games/join">Join game</Button>
                     <Button action={`/users/@${this.state.username}`}>
                         View stats
                     </Button>
-                    <Button>Log out</Button>
+                    <Button
+                        action={() => {
+                            setCredentials(false);
+                        }}
+                    >
+                        Log out
+                    </Button>
                     <LabeledDivider label="General" />
-                    <Button>Browse games</Button>
+                    <Button action="/games">Browse games</Button>
                     <Button action="/users">Browse users</Button>
-                    <Button primary>View competition</Button>
+                    <Button action="/competition" primary>
+                        View competition
+                    </Button>
                 </FlexContainer>
             );
         else
             return (
                 <FlexContainer direction="column" gap={10}>
-                    <Button primary>Play as guest</Button>
-                    <Button>Join game</Button>
-                    <Button>Browse games</Button>
+                    <Button action="/games/new" primary>
+                        Play as guest
+                    </Button>
+                    <Button action="/games/join">Join game</Button>
+                    <Button action="/games">Browse games</Button>
                     <Button action="/users">Browse users</Button>
-                    <Button>View competition</Button>
+                    <Button action="/competition">View competition</Button>
                     <LabeledDivider label="or" />
-                    <Button action="/signup">Create account</Button>
+                    <Button action="/signup" primary>
+                        Create account
+                    </Button>
                     <Button action="/login">Log in</Button>
                 </FlexContainer>
             );

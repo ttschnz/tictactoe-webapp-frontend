@@ -11,6 +11,10 @@ class Heading extends React.Component<{
      */
     level: 1 | 2 | 3 | 4 | 5 | 6;
     /**
+     * The amount of space to add above and below the heading.
+     */
+    space?: number;
+    /**
      * The class name of the heading.
      */
     className?: string;
@@ -24,6 +28,10 @@ class Heading extends React.Component<{
                     `Heading${this.props.level}`,
                     this.props.className
                 ),
+                style: {
+                    marginTop: `${this.props.space}px`,
+                    marginBottom: `${this.props.space}px`,
+                },
             },
             this.props.children
         );
