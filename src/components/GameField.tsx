@@ -1,8 +1,16 @@
 import classNames from "classnames";
 import React, { SyntheticEvent } from "react";
-import WebSocketConnection from "../api/apiService";
+import WebSocketConnection, { api } from "../api/apiService";
+import { getGameKey } from "../api/credentials";
 import { gameIdToHex, parseMoves } from "../utils/gameUtils";
-import { PositionIndex, PostGameInfo, SocketResponse } from "../utils/types";
+
+import {
+    GameMetaData,
+    PositionIndex,
+    PostGameInfo,
+    Move,
+    SocketResponse,
+} from "../utils/types";
 import FlexContainer from "./FlexContainer";
 import "./GameField.css";
 const occupierMap = { "-1": "o", "1": "x", "0": "none", undefined: "loading" };
@@ -58,76 +66,90 @@ class GameTile extends React.Component<{
  * @component
  * @hideconstructor
  */
-class GameField extends React.Component<{
-    gameField: PostGameInfo["gameField"] | undefined[];
-    sizeValue: number;
-    sizeUnit: "vh" | "vw" | "%" | "px";
-    gameId: number;
-    useNewSocket: boolean;
-    editable: boolean;
-}> {
+class GameField extends React.Component<
+    {
+        gameField: PostGameInfo["gameField"] | undefined[];
+        sizeValue: number;
+        sizeUnit: "vh" | "vw" | "%" | "px";
+        gameId: number;
+        useNewSocket: boolean;
+        editable: boolean;
+    },
+    {
+        gameField: PostGameInfo["gameField"] | undefined[];
+        players: GameMetaData["players"];
+    }
+> {
     socket?: WebSocketConnection;
     socketRefresh?: NodeJS.Timer;
     constructor(props: any) {
         super(props);
+        this.state = {
+            gameField: this.props.gameField,
+            players: {},
+        };
         // bind the makeMove function to the component
         this.makeMove = this.makeMove.bind(this);
     }
-    componentDidMount(): void {
+    async componentDidMount() {
         // subscribe to the game via websocket as soon as the component is mounted
         this.socket = new WebSocketConnection(this.props.useNewSocket);
-        this.socket
-            .send(
-                "subscribeGame",
-                {
-                    gameId: gameIdToHex(this.props.gameId),
-                },
-                false,
-                false
-            )
-            .then((value) => {
-                // the value will be updated as more data is received, therefore we need to update the state when the data is received
-                let lastValue: SocketResponse[];
-                // set a timer to update the state every half second
-                this.socketRefresh = setInterval(() => {
-                    // if the value has changed since the last update
-                    if (lastValue !== value) {
-                        console.log("got response from server", value);
-                        // TODO: check if the moves are really directly in the data of the socket
-                        let newResponse = (value as SocketResponse[])[
-                            (value as SocketResponse[]).length - 1
-                        ];
-                        // if the response is a game update
-                        if (
-                            newResponse.success &&
-                            Array.isArray(newResponse.data)
-                        ) {
-                            // parse the moves
-                            console.log("got new game field", newResponse.data);
-                            let { data } = newResponse;
-                            // set the new game field
-                            this.setState({
-                                gameField: parseMoves(data),
-                            });
-                        }
-                        console.log(value);
-                        lastValue = value as SocketResponse[];
-                    } else {
-                    }
-                }, 500);
-            });
+        this.socket.send(
+            "subscribeGame",
+            {
+                gameId: this.props.gameId,
+            },
+            false,
+            undefined,
+            (response: SocketResponse) => {
+                console.log("got response from server", response);
+
+                // if the response is a game update
+                if (response.success && response.action === "broadcast") {
+                    const gameData: GameMetaData = response.data;
+                    // parse the moves
+                    console.log("got new game field", response.data);
+                    // set the new game field
+                    this.setState({
+                        gameField: parseMoves(gameData.moves, gameData.players),
+                    });
+                }
+            }
+        );
+
+        // get the gameField from the API
+        let response = await api(`/viewGame`, {
+            gameId: gameIdToHex(this.props.gameId),
+        });
+        // if the response is successful, update the gameField
+        if (response.success) {
+            // get the meta data of the game
+            const gameMetaData = {
+                players: response.data.players,
+                gameState: response.data.gameState,
+                moves: response.data.moves,
+            } as GameMetaData;
+            // get the moves of the game
+            const moves = response.data.moves as Move[];
+            // evaluate the game
+            let gameField = parseMoves(moves, gameMetaData.players);
+            // update the gameField
+            console.log("updating gameField", gameField);
+            this.setState({ gameField, players: gameMetaData.players });
+        }
     }
     componentWillUnmount(): void {
         // unsubscribe from the game when the component is unmounted
         this.socket?.send("unsubscribeGame", {
-            gameId: gameIdToHex(this.props.gameId),
+            gameId: this.props.gameId,
         });
         // clear the timer
+        console.log("clearing timer for socket refresh");
         if (this.socketRefresh) clearInterval(this.socketRefresh);
     }
     render(): React.ReactNode {
         //
-        console.log("rendering game field", this.props.gameField);
+        console.log("rendering game field", this.state.gameField);
         return (
             <FlexContainer
                 direction="row"
@@ -140,25 +162,31 @@ class GameField extends React.Component<{
         );
     }
     // make a move on the game field and send it to the server
-    async makeMove(index: PositionIndex): Promise<boolean> {
-        console.log(this.props.editable, index);
-        if (this.props.editable) {
-            console.log("making move", index);
-            return (
+    makeMove(index: PositionIndex): Promise<boolean> {
+        return new Promise((resolve, _reject) => {
+            if (this.props.editable) {
+                console.log("making move", index);
                 // send the move to the server via the websocket
-                (
-                    (await this.socket?.send(
-                        "makeMove",
-                        { movePosition: index, gameId: this.props.gameId },
-                        true
-                    )) as SocketResponse
-                ).success
-            );
-        } else return false;
+                this.socket?.send(
+                    "makeMove",
+                    {
+                        movePosition: index,
+                        gameId: this.props.gameId,
+                    },
+                    true,
+                    getGameKey(this.props.gameId),
+                    (response) => {
+                        resolve(response.success);
+                    }
+                );
+            } else {
+                resolve(false);
+            }
+        });
     }
     getGameTiles(): JSX.Element[] {
         // map the game field to the game tiles and return them
-        return this.props.gameField.map((value, index) => (
+        return this.state.gameField.map((value, index) => (
             <GameTile
                 value={value}
                 key={index}

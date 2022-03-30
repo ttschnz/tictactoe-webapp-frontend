@@ -3,11 +3,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../../api/apiService";
 import { getCredentials, getGameKey } from "../../api/credentials";
-import {
-    evaluatePlayer,
-    gameIdFromHex,
-    gameIdToHex,
-} from "../../utils/gameUtils";
+import { gameIdFromHex, gameIdToHex, parseMoves } from "../../utils/gameUtils";
 import { GameMetaData, Move, PostGameInfo } from "../../utils/types";
 import FlexContainer from "../FlexContainer";
 import GameField from "../GameField";
@@ -33,38 +29,33 @@ class Game extends React.Component<
     constructor(props: any) {
         super(props);
         // initialize the gameField with an empty array
+        console.log("initializing gameField");
         this.state = { gameField: Array(9).fill(undefined), players: {} };
     }
-    async componentDidMount() {
-        // get the gameField from the API
-        let response = await api(`/viewGame`, {
-            gameId: gameIdToHex(this.props.gameId),
-        });
-        // if the response is successful, update the gameField
-        if (response.success) {
-            // get the meta data of the game
-            const gameMetaData = {
-                players: response.data.players,
-                gameState: response.data.gameState,
-                moves: response.data.moves,
-            } as GameMetaData;
-            // get the moves of the game
-            const moves = response.data.moves as Move[];
-            // evaluate the game
-            let gameField: PostGameInfo["gameField"] = Array(9).fill(undefined);
-            for (let move of moves) {
-                gameField[move.movePosition] = evaluatePlayer(
-                    move.player,
-                    gameMetaData.players
-                );
-            }
-            console.log({ gameData: gameField });
-            // update the gameField
-            this.setState({ gameField, players: gameMetaData.players });
-        }
-    }
+    // async componentDidMount() {
+    //     // get the gameField from the API
+    //     let response = await api(`/viewGame`, {
+    //         gameId: gameIdToHex(this.props.gameId),
+    //     });
+    //     // if the response is successful, update the gameField
+    //     if (response.success) {
+    //         // get the meta data of the game
+    //         const gameMetaData = {
+    //             players: response.data.players,
+    //             gameState: response.data.gameState,
+    //             moves: response.data.moves,
+    //         } as GameMetaData;
+    //         // get the moves of the game
+    //         const moves = response.data.moves as Move[];
+    //         // evaluate the game
+    //         let gameField = parseMoves(moves, gameMetaData.players);
+    //         // update the gameField
+    //         console.log("updating gameField", gameField);
+    //         this.setState({ gameField, players: gameMetaData.players });
+    //     }
+    // }
     render(): React.ReactNode {
-        console.log(`rendering for players`, this.state.players);
+        console.log("rendering game with gameField", this.state.gameField);
         return (
             <GameField
                 gameField={this.state.gameField}

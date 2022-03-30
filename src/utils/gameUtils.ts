@@ -26,6 +26,18 @@ export function evaluatePlayer(
 
 // parse moves to a game field
 // TODO: returns empty game field at the moment - should be filled with moves
-export function parseMoves(moves: Move[]): PostGameInfo["gameField"] {
-    return [0, 0, 0, 0, 0, 0, 0, 0, 0];
+export function parseMoves(
+    moves: Move[],
+    players: GameMetaData["players"]
+): PostGameInfo["gameField"] {
+    console.log("parsing moves", moves, players);
+    // create an empty game field
+    let gameField: PostGameInfo["gameField"] = Array(9).fill(undefined);
+    // iterate over all moves
+    for (let move of moves) {
+        // playe the player's symbol in the array at the position of the move
+        gameField[move.movePosition] = evaluatePlayer(move.player, players);
+    }
+    console.log("parsed moves", gameField);
+    return gameField;
 }

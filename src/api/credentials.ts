@@ -83,7 +83,7 @@ export function addGameKey(gameKey: string, gameId: number) {
  * @param gameId the game id
  * @returns the game key of the game
  */
-export function getGameKey(gameId: number) {
+export function getGameKey(gameId: number): string | undefined {
     let gameKeys = JSON.parse(localStorage.getItem("gameKeys") ?? "{}");
     return gameKeys[gameId];
 }
