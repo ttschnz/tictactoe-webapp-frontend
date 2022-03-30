@@ -5,4 +5,38 @@
     right: 0;
     bottom: 0;
     z-index: 99999;
+    background: #00000070;
+}
+.Popup-Message {
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 5px 10px;
+    height: 100%;
+    display: block;
+    background: hsl(0deg 70% 90%);
+    color: hsl(0deg 66% 10%) !important;
+}
+.Popup > .Tile > .MaterialIconButton:first-of-type {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+}
+
+/* fade in animation */
+.Popup-Tile {
+    transform: scale(1);
+    transition: transform 0.3s;
+    min-height: unset;
+}
+.Popup {
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+.Popup-Tile-Hidden {
+    transform: scale(0.7);
+}
+
+.Popup-Hidden {
+    opacity: 0;
 }
