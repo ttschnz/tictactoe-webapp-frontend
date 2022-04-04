@@ -141,6 +141,7 @@ class GameField extends React.Component<
         }
     }
     error(index: number) {
+        console.log("error on tile", index);
         // set the error flag for the tile
         this.setState((currentState) => {
             // copy the current states error array

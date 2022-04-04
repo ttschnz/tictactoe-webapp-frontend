@@ -1,5 +1,6 @@
 // variable to store configuration data
 const config = {
+    version: "0.0.1",
     refferralBadge: {
         href: "https://www.digitalocean.com/?refcode=5431ada19bb0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge",
         image: "https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%203.svg",
@@ -10,13 +11,22 @@ const config = {
         default: "https://github.com/ttschnz/tictactoe_webapp/",
     },
     server: {
+        // set to true if the api server is the same as the frontend server
+        useSameServer: false,
+        // which protocol to use to connect to the api (http: or https:)
         protocol: "http:",
+        // which protocol to use for the websocket (ws: or wss:)
         socketProtocol: "ws:",
+        // the hostname of the api server
         hostname: "localhost",
+        // the port to use to connect to the api
         port: 80,
+        // the prefix to use to connect to the api (e.g. /api/v1/)
         prefix: "/",
+        // the prefix to use to connect to the websocket (e.g. /ws/)
         socketPrefix: "/ws",
     },
+    // the local environment
     environment: "DEV",
 };
 export default config;

@@ -17,6 +17,7 @@ import JoinGame from "./routes/JoinGame";
 import Error404 from "./routes/Error404";
 import HomeLink from "./HomeLink";
 import Tile from "./Tile";
+import GameStats from "./routes/GameStats";
 
 import {
     checkCredentials,
@@ -164,7 +165,7 @@ class App extends React.Component<
                                 {/* render the games properties */}
                                 <Route
                                     path="/games/:gameId"
-                                    element={<Game.GameStats />}
+                                    element={<GameStats />}
                                 />
                                 <Route
                                     path="/"

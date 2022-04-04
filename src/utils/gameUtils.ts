@@ -1,8 +1,8 @@
 import WebSocketConnection, { api } from "../api/apiService";
-import { getGameKey } from "../api/credentials";
+import { getCredentials, getGameKey } from "../api/credentials";
 import { gameChange } from "./subjects";
 import { Move, PostGameInfo, SocketResponse, Players } from "./types";
-import { set, setMany, get, values, update } from "idb-keyval";
+import { setMany, get, values, update } from "idb-keyval";
 
 // transform a gameId number to a hexadecimal string
 export function gameIdToHex(gameId: number): string {
@@ -102,21 +102,23 @@ export async function loadGame(gameId: number): Promise<void> {
 
 const gameStorage = {
     saveGame(gameInfo: PostGameInfo): void {
+        console.log("saving game", gameInfo);
         update(gameInfo.gameId, (oldValue: PostGameInfo | undefined) => {
             console.log("updating game", { oldValue, gameInfo });
             if (oldValue === undefined) return gameInfo;
-            // if the old value has less or equal 0s in the gameField, replace it
+            // if the new value has less or equal 0s in the gameField, replace it
             else if (
-                oldValue.gameField.filter((x) => x === 0).length <=
-                gameInfo.gameField.filter((x) => x === 0).length
+                gameInfo.gameField.filter((x) => x === 0).length <=
+                oldValue.gameField.filter((x) => x === 0).length
             ) {
+                gameChange.next(gameInfo);
                 return gameInfo;
             } else return oldValue;
         });
-        set(gameInfo.gameId, gameInfo);
     },
     saveGames(games: PostGameInfo[]): void {
         setMany(games.map((game) => [game.gameId, game]));
+        games.map((game) => gameChange.next(game));
     },
     async loadGame(gameId: number): Promise<PostGameInfo> {
         let gameInfo = (await get(gameId)) as PostGameInfo;
@@ -128,3 +130,29 @@ const gameStorage = {
     },
 };
 export { gameStorage };
+
+/**
+ * A funciton that figures out whether the user has access to a game, either by being the attacker or the defender or by having the gameKey.
+ * @param gameId the gameId of the game in question
+ * @param attacker the username of the attacker
+ * @param defender the username of the defender
+ */
+export function hasAccessToGame(
+    gameId: number,
+    attacker: Players["attacker"],
+    defender: Players["defender"]
+) {
+    const credentials = getCredentials();
+    // if the user is the attacker or the defender, he has access to the game
+    if (
+        credentials &&
+        (credentials.username === attacker || credentials.username === defender)
+    ) {
+        return true;
+        // if the user has the gameKey, he has access to the game
+    } else if (getGameKey(gameId)) {
+        return true;
+    } else {
+        return false;
+    }
+}

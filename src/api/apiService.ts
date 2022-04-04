@@ -15,8 +15,12 @@ export function api(
 ): Promise<{ success: boolean; error?: any; data?: any }> {
     return new Promise((resolve, _reject) => {
         let credentials = getCredentials();
+        // if config.useSameServer is true, the api server is the same as the frontend server
+        let serverLocation = config.server.useSameServer
+            ? window.location
+            : config.server;
         fetch(
-            `${config.server.protocol}//${config.server.hostname}:${config.server.port}${config.server.prefix}${target}`,
+            `${serverLocation.protocol}//${serverLocation.hostname}:${serverLocation.port}${config.server.prefix}${target}`,
             {
                 method: "post",
                 body: new URLSearchParams(Object.entries(data)).toString(),

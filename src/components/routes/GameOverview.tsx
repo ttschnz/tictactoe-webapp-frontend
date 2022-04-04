@@ -11,9 +11,12 @@ import "../GameOverview.css";
 import { api } from "../../api/apiService";
 import Loading, { LoadingValue } from "../Loading";
 import uniquify from "../../utils/uniquify";
-import { gameIdToHex, gameStorage } from "../../utils/gameUtils";
+import {
+    gameIdToHex,
+    gameStorage,
+    hasAccessToGame,
+} from "../../utils/gameUtils";
 import Space from "../Space";
-import { hasAccessToGame } from "./Game";
 
 /**
  * A component that renders a game overview.
