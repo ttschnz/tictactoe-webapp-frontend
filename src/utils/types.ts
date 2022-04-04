@@ -36,16 +36,22 @@ export type SocketResponse = JSONResponse & {
 
 // Datatype used to represent a users games.
 export interface PostGameInfo {
-    attacker: string;
-    defender: string;
+    attacker: string | null | undefined;
+    defender: string | null | undefined;
     gameField: Array<-1 | 0 | 1>;
     gameId: number;
-    isDraw: boolean;
-    isFinished: boolean;
+    isDraw?: boolean;
+    isFinished?: boolean;
     winner: string | null | false;
 }
-
+export interface Players {
+    attacker: string | null | undefined;
+    defender: string | null | undefined;
+}
 // Datatype used to store the game's data, which is received from the server by requesting the game's data.
+/**
+ * @deprecated
+ */
 export interface GameMetaData {
     players: {
         attacker?: string | null;

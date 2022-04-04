@@ -1,5 +1,6 @@
 import React, { MouseEventHandler } from "react";
 import { Link } from "react-router-dom";
+import MaterialIcon from "./MaterialIcon";
 import "./MaterialIconButton.css";
 
 /**
@@ -23,7 +24,7 @@ class MaterialIconButton extends React.Component<
                 >
                     {/* the button */}
                     <button className="MaterialIconButton material-icons">
-                        {this.props.name}
+                        <MaterialIcon name={this.props.name} />
                     </button>
                 </Link>
             );
@@ -35,7 +36,7 @@ class MaterialIconButton extends React.Component<
                     className="MaterialIconButton material-icons"
                     onClick={this.props.action}
                 >
-                    {this.props.name}
+                    <MaterialIcon name={this.props.name} />
                 </button>
             );
     }

@@ -5,13 +5,14 @@
  */
 
 import { Subject } from "rxjs";
+import { PostGameInfo } from "./types";
 
 // Define subjects used in the application.
 const errorSubject = new Subject();
 const errorResolveSubject = new Subject();
 const scroll = new Subject();
 const credentialChange = new Subject();
-
+const gameChange = new Subject<PostGameInfo>();
 // when the document registers a scroll event, the scroll event is sent to the scroll subject
 document.addEventListener("scroll", (event) => {
     scroll.next(event);
@@ -74,4 +75,5 @@ export {
     errorResolveSubject,
     locationChange,
     scroll,
+    gameChange,
 };

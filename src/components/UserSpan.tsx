@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { GameMetaData } from "../utils/types";
+import { GameMetaData, Players } from "../utils/types";
 import { LoadingValue } from "./Loading";
 import { credentialChange } from "../utils/subjects";
 import { Credentials } from "../utils/types";
@@ -15,10 +15,7 @@ import classNames from "classnames";
  */
 class UserSpan extends React.Component<
     {
-        username?:
-            | GameMetaData["players"]["attacker"]
-            | GameMetaData["players"]["defender"]
-            | null;
+        username?: Players["attacker"] | Players["defender"] | null;
     },
     { credentials: Credentials | false }
 > {

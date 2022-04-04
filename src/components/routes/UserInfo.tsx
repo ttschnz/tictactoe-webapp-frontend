@@ -117,7 +117,8 @@ class UserInfo extends React.Component<
         else if (this.state.games.length === 0)
             return [<span key="noGames">No games</span>];
         // if the user has games, display them
-        else return this.state.games.map(createGameTile);
+        else
+            return this.state.games.map((gameInfo) => createGameTile(gameInfo));
     }
 }
 

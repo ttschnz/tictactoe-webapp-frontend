@@ -1,10 +1,14 @@
 import classNames from "classnames";
 import React from "react";
 import { useParams } from "react-router-dom";
-import { api } from "../../api/apiService";
 import { getCredentials, getGameKey } from "../../api/credentials";
-import { gameIdFromHex, gameIdToHex, parseMoves } from "../../utils/gameUtils";
-import { GameMetaData, Move, PostGameInfo } from "../../utils/types";
+import {
+    gameIdFromHex,
+    gameIdToHex,
+    gameStorage,
+    loadGame,
+} from "../../utils/gameUtils";
+import { PostGameInfo, Players } from "../../utils/types";
 import FlexContainer from "../FlexContainer";
 import GameField from "../GameField";
 import Heading from "../Heading";
@@ -13,7 +17,8 @@ import UserSpan from "../UserSpan";
 import Error404 from "./Error404";
 import "./Game.css";
 import { getGameState } from "./GameOverview";
-
+import { Subscription } from "rxjs";
+import { gameChange } from "../../utils/subjects";
 /**
  * A component that renders the game of a fullscreen game.
  * @component
@@ -22,51 +27,57 @@ import { getGameState } from "./GameOverview";
 class Game extends React.Component<
     { gameId: PostGameInfo["gameId"] },
     {
-        gameField: PostGameInfo["gameField"] | undefined[];
-        players: GameMetaData["players"];
+        gameInfo: PostGameInfo;
     }
 > {
+    subscriptions: { [key: string]: Subscription } = {};
     constructor(props: any) {
         super(props);
         // initialize the gameField with an empty array
         console.log("initializing gameField");
-        this.state = { gameField: Array(9).fill(undefined), players: {} };
+        this.state = {
+            gameInfo: {
+                attacker: undefined,
+                defender: undefined,
+                gameField: [],
+                gameId: this.props.gameId,
+                isDraw: undefined,
+                isFinished: undefined,
+                winner: false,
+            },
+        };
     }
-    // async componentDidMount() {
-    //     // get the gameField from the API
-    //     let response = await api(`/viewGame`, {
-    //         gameId: gameIdToHex(this.props.gameId),
-    //     });
-    //     // if the response is successful, update the gameField
-    //     if (response.success) {
-    //         // get the meta data of the game
-    //         const gameMetaData = {
-    //             players: response.data.players,
-    //             gameState: response.data.gameState,
-    //             moves: response.data.moves,
-    //         } as GameMetaData;
-    //         // get the moves of the game
-    //         const moves = response.data.moves as Move[];
-    //         // evaluate the game
-    //         let gameField = parseMoves(moves, gameMetaData.players);
-    //         // update the gameField
-    //         console.log("updating gameField", gameField);
-    //         this.setState({ gameField, players: gameMetaData.players });
-    //     }
-    // }
+    async componentDidMount() {
+        // subscribe to the gameChange subject
+        this.subscriptions.gameChange = gameChange.subscribe({
+            next: (gameInfo) => {
+                console.log(`gameChange @Game:`, gameInfo);
+                this.setState({ gameInfo });
+            },
+        });
+        // ask for an update on the game if the game cannot be found in the game storage
+        // the update will come over the gameChange subject, therefore we don't need to wait for it
+        if (!gameStorage.loadGame(this.props.gameId))
+            loadGame(this.props.gameId);
+    }
+    componentWillUnmount() {
+        // unsubscribe from the gameChange subject
+        this.subscriptions.gameChange.unsubscribe();
+    }
     render(): React.ReactNode {
-        console.log("rendering game with gameField", this.state.gameField);
         return (
             <GameField
-                gameField={this.state.gameField}
+                players={{
+                    attacker: this.state.gameInfo.attacker,
+                    defender: this.state.gameInfo.defender,
+                }}
                 gameId={this.props.gameId}
                 sizeUnit="px"
                 sizeValue={500}
-                useNewSocket={true}
                 editable={hasAccessToGame(
                     this.props.gameId,
-                    this.state.players.attacker,
-                    this.state.players.defender
+                    this.state.gameInfo.attacker,
+                    this.state.gameInfo.defender
                 )}
             ></GameField>
         );
@@ -80,44 +91,45 @@ class Game extends React.Component<
  */
 class GameStats extends React.Component<
     { gameId: PostGameInfo["gameId"] },
-    { players: GameMetaData["players"]; gameState: GameMetaData["gameState"] }
+    { gameInfo: PostGameInfo }
 > {
+    subscriptions: { [key: string]: Subscription } = {};
     constructor(props: any) {
         super(props);
         // initialize the players and gameState with an empty values
         this.state = {
-            players: { attacker: undefined, defender: undefined },
-            gameState: {
-                finished: undefined,
-                winner: undefined,
+            gameInfo: {
+                attacker: undefined,
+                defender: undefined,
+                gameField: [],
+                gameId: this.props.gameId,
                 isDraw: undefined,
+                isFinished: undefined,
+                winner: false,
             },
         };
     }
 
-    async componentDidMount() {
-        // get the gameMetaData from the API
-        let response = await api(`/viewGame`, {
-            gameId: gameIdToHex(this.props.gameId),
+    componentDidMount() {
+        // subscribe to the gameChange subject
+        this.subscriptions.gameChange = gameChange.subscribe({
+            next: (gameInfo) => {
+                console.log(`gameChange @GameStats :`, gameInfo);
+                this.setState({ gameInfo });
+            },
         });
-        // if the response is successful, update the players and gameState
-        if (response.success) {
-            // get the meta data of the game
-            const gameMetaData = {
-                players: response.data.players,
-                gameState: response.data.gameState,
-                moves: response.data.moves,
-            } as GameMetaData;
-            // update the players and gameState
-            this.setState({
-                players: gameMetaData.players,
-                gameState: gameMetaData.gameState,
-            });
-        }
+        // ask for an update on the game if the game cannot be found in the game storage
+        // the update will come over the gameChange subject, therefore we don't need to wait for it
+        if (!gameStorage.loadGame(this.props.gameId))
+            loadGame(this.props.gameId);
+    }
+    componentWillUnmount() {
+        // unsubscribe from the gameChange subject
+        this.subscriptions.gameChange.unsubscribe();
     }
     getOwnRole(): "attacker" | "defender" | false {
-        const attacker = this.state.players.attacker;
-        const defender = this.state.players.defender;
+        const attacker = this.state.gameInfo.attacker;
+        const defender = this.state.gameInfo.defender;
         // if the attacker and defener are set in the state, check if the user has access to the game
         if (
             attacker !== undefined &&
@@ -149,7 +161,7 @@ class GameStats extends React.Component<
                 {/* show the game id */}
                 <Heading level={1}>#{gameIdToHex(this.props.gameId)}</Heading>
                 {/* display the current game state (ongoing, won, etc.) */}
-                <span>{getGameState(this.state.gameState)}</span>
+                <span>{getGameState(this.state.gameInfo)}</span>
                 {/* show who is attacking */}
                 <FlexContainer
                     direction="row"
@@ -162,7 +174,7 @@ class GameStats extends React.Component<
                     )}
                 >
                     <Heading level={3}>Attacker:</Heading>
-                    <UserSpan username={this.state.players.attacker} />
+                    <UserSpan username={this.state.gameInfo.attacker} />
                 </FlexContainer>
                 {/* show who is defending */}
                 <FlexContainer
@@ -176,7 +188,7 @@ class GameStats extends React.Component<
                     )}
                 >
                     <Heading level={3}>Defender:</Heading>
-                    <UserSpan username={this.state.players.defender} />
+                    <UserSpan username={this.state.gameInfo.defender} />
                 </FlexContainer>
             </Tile>
         );
@@ -208,8 +220,8 @@ function _GameStats() {
  */
 export function hasAccessToGame(
     gameId: number,
-    attacker: GameMetaData["players"]["attacker"],
-    defender: GameMetaData["players"]["defender"]
+    attacker: Players["attacker"],
+    defender: Players["defender"]
 ) {
     const credentials = getCredentials();
     // if the user is the attacker or the defender, he has access to the game
