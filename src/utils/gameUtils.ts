@@ -1,13 +1,7 @@
 import WebSocketConnection, { api } from "../api/apiService";
 import { getGameKey } from "../api/credentials";
 import { gameChange } from "./subjects";
-import {
-    GameMetaData,
-    Move,
-    PostGameInfo,
-    SocketResponse,
-    Players,
-} from "./types";
+import { Move, PostGameInfo, SocketResponse, Players } from "./types";
 import { set, setMany, get, values, update } from "idb-keyval";
 
 // transform a gameId number to a hexadecimal string
@@ -51,36 +45,19 @@ export function parseMoves(
     return gameField;
 }
 
-export function parseMetaData(
-    gameMetaData: GameMetaData,
-    gameId: number
-): PostGameInfo {
-    const { attacker, defender } = gameMetaData.players;
-    const { isDraw, winner, finished } = gameMetaData.gameState;
-    return {
-        attacker,
-        defender,
-        gameId,
-        isDraw: isDraw === undefined ? false : isDraw,
-        winner: winner === undefined ? false : winner,
-        isFinished: finished ?? false,
-        gameField: parseMoves(gameMetaData.moves, {
-            attacker,
-            defender,
-        }),
-    };
-}
-
 const socket = new WebSocketConnection(true);
 export function subscribeGame(gameId: number) {
     socket.send(
         "subscribeGame",
-        { gameId: gameId },
+        { gameId },
         false,
         undefined,
         (response: SocketResponse) => {
             if (response.success && response.action === "broadcast") {
+                console.log("broadcasting data:", response.data);
                 gameChange.next(response.data);
+            } else {
+                console.log("ignoring recieved message:", response);
             }
         }
     );
@@ -103,7 +80,7 @@ export function makeMove(
     return new Promise((resolve, _reject) => {
         socket.send(
             "makeMove",
-            { gameId: gameId, movePosition: movePosition },
+            { gameId, movePosition },
             true,
             getGameKey(gameId),
             (response: SocketResponse) => resolve(response.success)
@@ -126,6 +103,7 @@ export async function loadGame(gameId: number): Promise<void> {
 const gameStorage = {
     saveGame(gameInfo: PostGameInfo): void {
         update(gameInfo.gameId, (oldValue: PostGameInfo | undefined) => {
+            console.log("updating game", { oldValue, gameInfo });
             if (oldValue === undefined) return gameInfo;
             // if the old value has less or equal 0s in the gameField, replace it
             else if (

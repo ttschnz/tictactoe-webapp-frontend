@@ -4,14 +4,14 @@ import FlexContainer from "../FlexContainer";
 import { Link } from "react-router-dom";
 import Heading from "../Heading";
 import GameField from "../GameField";
-import { GameMetaData, PostGameInfo } from "../../utils/types";
+import { PostGameInfo } from "../../utils/types";
 import UserSpan from "../UserSpan";
 import Button from "../Button";
 import "../GameOverview.css";
 import { api } from "../../api/apiService";
-import Loading from "../Loading";
+import Loading, { LoadingValue } from "../Loading";
 import uniquify from "../../utils/uniquify";
-import { gameIdToHex, gameStorage, parseMetaData } from "../../utils/gameUtils";
+import { gameIdToHex, gameStorage } from "../../utils/gameUtils";
 import Space from "../Space";
 import { hasAccessToGame } from "./Game";
 
@@ -28,8 +28,6 @@ class GameOverview extends React.Component<
         super(props);
         // initialize state
         this.state = { games: undefined, hasMoreGames: true };
-        // bind functions
-        this.updateGame = this.updateGame.bind(this);
     }
 
     async componentDidMount() {
@@ -103,36 +101,10 @@ class GameOverview extends React.Component<
         else
             return [
                 ...uniquify(
-                    this.state.games.map((gameInfo) =>
-                        createGameTile(gameInfo, this.updateGame)
-                    )
+                    this.state.games.map((gameInfo) => createGameTile(gameInfo))
                 ),
                 this.loadMoreButton(),
             ];
-    }
-    /**
-     * updates a game in the state.
-     * @param gameId the id of the game to update
-     * @param gameMetaData the ata of the game to update
-     */
-    updateGame(gameId: number, gameMetaData: GameMetaData) {
-        console.log("game updated: ", { gameId, gameMetaData });
-
-        this.setState((prevState) => {
-            let newState = { ...prevState };
-            // keep the state if no games are loaded
-            if (!newState.games) return;
-            // find the game in the list and update it
-            newState.games = newState.games.map((gameInfo) => {
-                // if the game is the one we want to update, update it
-                if (gameInfo.gameId === gameId)
-                    return parseMetaData(gameMetaData, gameId);
-                // otherwise, return the game as is
-                else return gameInfo;
-            });
-            // return the new state
-            return newState;
-        });
     }
     /**
      * Renders a button that loads more games. If there are no more games, the button is not rendered. Instead, a message is shown.
@@ -203,14 +175,15 @@ class GameOverview extends React.Component<
  * Determines the state of a game and returns a string that describes it.
  */
 export function getGameState(gameInfo: PostGameInfo) {
-    const finished = gameInfo.isFinished;
-    if (finished && gameInfo.winner)
+    const { isFinished, winner, isDraw } = gameInfo;
+    if (isFinished === undefined) return <LoadingValue />;
+    else if (isFinished && winner)
         return (
             <span>
-                <UserSpan username={gameInfo.winner} /> won
+                <UserSpan username={winner} /> won
             </span>
         );
-    else if (finished && gameInfo.isDraw) return <span>draw</span>;
+    else if (isFinished && isDraw) return <span>draw</span>;
     else return <span>ongoing</span>;
 }
 
@@ -239,10 +212,7 @@ export function getContinueButton(gameInfo: PostGameInfo) {
 /**
  * Creates a game tile showing the game's information and its state.
  */
-export function createGameTile(
-    gameInfo: PostGameInfo,
-    updateGame?: (gameId: number, newValue: GameMetaData) => void
-) {
+export function createGameTile(gameInfo: PostGameInfo) {
     return (
         // create a tile showing the game's information
         <Tile key={gameIdToHex(gameInfo.gameId)}>

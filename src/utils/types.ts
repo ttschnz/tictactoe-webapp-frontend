@@ -11,9 +11,9 @@ export type Credentials = {
 };
 
 // A response from the servers API.
-export type JSONResponse = {
+export type JSONResponse<T = any> = {
     success: boolean;
-    data?: any;
+    data?: T;
     error?: any;
 };
 
@@ -47,22 +47,6 @@ export interface PostGameInfo {
 export interface Players {
     attacker: string | null | undefined;
     defender: string | null | undefined;
-}
-// Datatype used to store the game's data, which is received from the server by requesting the game's data.
-/**
- * @deprecated
- */
-export interface GameMetaData {
-    players: {
-        attacker?: string | null;
-        defender?: string | null;
-    };
-    gameState: {
-        finished?: boolean;
-        winner?: string | null;
-        isDraw?: boolean;
-    };
-    moves: Move[];
 }
 // Position where a move can be placed
 export type PositionIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;

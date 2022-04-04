@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { GameMetaData, Players } from "../utils/types";
+import { Players } from "../utils/types";
 import { LoadingValue } from "./Loading";
 import { credentialChange } from "../utils/subjects";
 import { Credentials } from "../utils/types";
