@@ -23,12 +23,12 @@ class Home extends React.Component<
         // bind functions
         this.recalculateState = this.recalculateState.bind(this);
         // initialize state
-        this.state = this.recalculateState();
+        this.state = this.recalculateState(false);
     }
     /**
      * Recalculates the state of the component.
      */
-    recalculateState() {
+    recalculateState(set = true) {
         // get credentials
         const credentials = getCredentials();
         // find out if the user is logged in
@@ -36,8 +36,8 @@ class Home extends React.Component<
             loggedIn: !!credentials,
             username: credentials ? credentials.username : "",
         };
-        // update state
-        this.setState(newState);
+        // update state if not prevented
+        if (set) this.setState(newState);
         // return new state
         return newState;
     }
