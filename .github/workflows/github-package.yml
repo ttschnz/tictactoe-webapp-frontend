@@ -32,5 +32,10 @@ jobs:
             - name: Upload Release
               uses: ncipollo/release-action@v1
               with:
+                  allowUpdates: true
+                  draft: true
+                  name: "Automated Release"
+                  tag: "{{ github.workflow.event.head_commit.id }}"
+                  body: "{{ github.workflow.event.head_commit.message | replace('\n', ' ') }}"
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
