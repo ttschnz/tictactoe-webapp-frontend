@@ -34,7 +34,7 @@ jobs:
               with:
                   allowUpdates: true
                   name: "Automated Release"
-                  tag: "v0.0.0-auto"
+                  tag: ${{format("v0.0.0-auto-{0}", ${{git describe --abbrev=7 --always  --long --match v* master}})}}
                   body: ""
                   commit: "master"
                   artifacts: "release.zip"
