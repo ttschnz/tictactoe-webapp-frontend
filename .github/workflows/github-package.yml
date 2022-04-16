@@ -34,7 +34,7 @@ jobs:
               with:
                   allowUpdates: true
                   name: "Automated Release"
-                  tag: {{ github.workflow.event.head_commit.id }}
-                  body: {{ github.workflow.event.head_commit.message | replace('\n', ' ') }}
+                  tag: ${{ github.workflow.event.head_commit.id }}
+                  body: ${{ github.workflow.event.head_commit.message}}
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
