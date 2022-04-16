@@ -36,6 +36,6 @@ jobs:
                   name: "Automated Release"
                   tag: "v0.0.0-auto"
                   body: ""
-                  comit: "main"
+                  commit: "main"
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
