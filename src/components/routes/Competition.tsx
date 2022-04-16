@@ -13,6 +13,7 @@ import { credentialChange } from "../../utils/subjects";
 import { api } from "../../api/apiService";
 import { NavigateFunction } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import jsUtils from "../../utils/jsUtils";
 /**
  * A component that renders the competition information
  * @component
@@ -37,6 +38,7 @@ class Competition extends React.Component<
         this.subscriptions.credentials = credentialChange.subscribe({
             next: this.handleCredentialChange,
         });
+        jsUtils.changeTitle("Competition");
     }
     componentWillUnmount() {
         // unsubscribe from credential changes when the component unmounts
@@ -106,6 +108,9 @@ class JoinCompetition extends React.Component<{
         super(props);
         // bind functions to this
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    componentDidMount() {
+        jsUtils.changeTitle("Join Competition");
     }
     handleSubmit(values: { [key: string]: string }): Promise<string | null> {
         return new Promise(async (resolve, _reject) => {

@@ -9,6 +9,7 @@ import { api } from "../../api/apiService";
 import { Credentials } from "../../utils/types";
 import FlexContainer from "../FlexContainer";
 import Form from "../Form";
+import jsUtils from "../../utils/jsUtils";
 
 /**
  * A component that displays a signup form.
@@ -73,7 +74,10 @@ class SignUp extends React.Component<
             return null;
         }
     }
-
+    componentDidMount() {
+        // set the page title
+        jsUtils.changeTitle("Sign Up");
+    }
     // render the component
     render(): React.ReactNode {
         return (

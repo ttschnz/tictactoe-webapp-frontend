@@ -2,6 +2,7 @@ import React from "react";
 import SortableTable, { TableProps } from "../SortableTable";
 import { api } from "../../api/apiService";
 import UserSpan from "../UserSpan";
+import jsUtils from "../../utils/jsUtils";
 
 /**
  * Displays a table of all users.
@@ -44,6 +45,7 @@ class UserOverview extends React.Component<
                 drawCount: user.drawCount,
             })),
         });
+        jsUtils.changeTitle("Users");
     }
 
     render(): React.ReactNode {

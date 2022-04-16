@@ -3,6 +3,7 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { api } from "../../api/apiService";
 import { addGameKey, getCredentials } from "../../api/credentials";
 import { gameIdFromHex } from "../../utils/gameUtils";
+import jsUtils from "../../utils/jsUtils";
 import Form from "../Form";
 /**
  * A component that displays a form for joining a game.
@@ -42,6 +43,9 @@ class JoinGame extends React.Component<{ navigation: NavigateFunction }> {
                 return resolve("failed to join game");
             }
         });
+    }
+    componentDidMount() {
+        jsUtils.changeTitle("Join Game");
     }
     render(): React.ReactNode {
         return (

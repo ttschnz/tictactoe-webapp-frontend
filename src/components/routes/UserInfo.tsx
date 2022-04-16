@@ -13,6 +13,7 @@ import { createGameTile } from "./GameOverview";
 import Button from "../Button";
 import LabeledDivider from "../LabeledDivider";
 import Space from "../Space";
+import jsUtils from "../../utils/jsUtils";
 
 // remove the at sign from the username to get the user id
 export function parseUsername(username: string): string {
@@ -38,6 +39,7 @@ class UserInfo extends React.Component<
     }
     componentDidMount() {
         this.updateGames();
+        jsUtils.changeTitle(`@${parseUsername(this.props.username)}`);
     }
 
     // render the component

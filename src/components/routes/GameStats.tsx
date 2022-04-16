@@ -18,6 +18,7 @@ import FlexContainer from "../FlexContainer";
 import { useParams } from "react-router-dom";
 import Error404 from "./Error404";
 import UserSpan from "../UserSpan";
+// import jsUtils from "../../utils/jsUtils";
 /**
  * A component that renders the stats of a fullscreen game.
  * @component
@@ -56,6 +57,9 @@ class GameStats extends React.Component<
         // the update will come over the gameChange subject, therefore we don't need to wait for it
         if (!gameStorage.loadGame(this.props.gameId))
             loadGame(this.props.gameId);
+
+        // since this is not a fullscreen component, we don't need to change the title of the page
+        // jsUtils.changeTitle(`Game #${gameIdToHex(this.props.gameId)}`);
     }
     componentWillUnmount() {
         // unsubscribe from the gameChange subject

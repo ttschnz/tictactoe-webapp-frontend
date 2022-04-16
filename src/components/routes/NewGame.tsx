@@ -15,6 +15,7 @@ import Button from "../Button";
 import { api } from "../../api/apiService";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { gameIdFromHex } from "../../utils/gameUtils";
+import jsUtils from "../../utils/jsUtils";
 /**
  * A component that displays a form for creating a new game.
  * @component
@@ -39,6 +40,7 @@ class NewGame extends React.Component<
         this.subscriptions.credentials = credentialChange.subscribe(
             this.handleCredentialChange
         );
+        jsUtils.changeTitle("New Game");
     }
     componentWillUnmount() {
         this.subscriptions.credentials?.unsubscribe();

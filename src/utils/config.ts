@@ -1,5 +1,6 @@
 // variable to store configuration data
 const config = {
+    title: "TicTacToe",
     version: "0.0.1",
     refferralBadge: {
         href: "https://www.digitalocean.com/?refcode=5431ada19bb0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge",

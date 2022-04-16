@@ -9,6 +9,7 @@ import { setCredentials } from "../../api/credentials";
 import { Credentials } from "../../utils/types";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import FlexContainer from "../FlexContainer";
+import jsUtils from "../../utils/jsUtils";
 
 /**
  * A component that renders the login page.
@@ -73,7 +74,9 @@ class Login extends React.Component<
         this.props.navigation("/");
         return null;
     }
-
+    componentDidMount() {
+        jsUtils.changeTitle("Log in");
+    }
     render(): React.ReactNode {
         return (
             <FlexContainer direction="column" gap={0}>

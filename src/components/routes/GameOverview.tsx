@@ -17,7 +17,7 @@ import {
     hasAccessToGame,
 } from "../../utils/gameUtils";
 import Space from "../Space";
-
+import jsUtils from "../../utils/jsUtils";
 /**
  * A component that renders a game overview.
  * @component
@@ -52,6 +52,7 @@ class GameOverview extends React.Component<
             // if the response is not successful, update the state to show an error
             this.setState({ successful: false });
         }
+        jsUtils.changeTitle("All Games");
     }
     render(): React.ReactNode {
         console.log("rendering game overview", this.state);

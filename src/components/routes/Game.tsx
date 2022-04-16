@@ -12,7 +12,7 @@ import Error404 from "./Error404";
 import "./Game.css";
 import { Subscription } from "rxjs";
 import { gameChange } from "../../utils/subjects";
-
+import jsUtils from "../../utils/jsUtils";
 /**
  * A component that renders the game of a fullscreen game.
  * @component
@@ -53,6 +53,7 @@ class Game extends React.Component<
         // the update will come over the gameChange subject, therefore we don't need to wait for it
         if (!gameStorage.loadGame(this.props.gameId))
             loadGame(this.props.gameId);
+        jsUtils.changeTitle(`Game #${this.props.gameId}`);
     }
     componentWillUnmount() {
         // unsubscribe from the gameChange subject

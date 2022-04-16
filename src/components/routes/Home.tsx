@@ -9,6 +9,7 @@ import { getCredentials, setCredentials } from "../../api/credentials";
 import { credentialChange } from "../../utils/subjects";
 import { Subscription } from "rxjs";
 import { Credentials } from "../../utils/types";
+import jsUtils from "../../utils/jsUtils";
 /**
  * A component that renders the home page.
  * @component
@@ -52,6 +53,7 @@ class Home extends React.Component<
         // if the user is logged in, subscribe to changes in the user's credentials (e.g. logout)
         let credentials = getCredentials();
         if (credentials) credentialChange.next(credentials);
+        jsUtils.changeTitle("Home");
     }
     componentWillUnmount() {
         // unsubscribe from subscriptions
