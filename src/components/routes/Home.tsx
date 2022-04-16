@@ -8,6 +8,7 @@ import LabeledDivider from "../LabeledDivider";
 import { getCredentials, setCredentials } from "../../api/credentials";
 import { credentialChange } from "../../utils/subjects";
 import { Subscription } from "rxjs";
+import { Credentials } from "../../utils/types";
 /**
  * A component that renders the home page.
  * @component
@@ -23,21 +24,23 @@ class Home extends React.Component<
         // bind functions
         this.recalculateState = this.recalculateState.bind(this);
         // initialize state
-        this.state = this.recalculateState(false);
+        let credents = getCredentials();
+        this.state = {
+            loggedIn: !!credents,
+            username: credents ? credents.username : "",
+        };
     }
     /**
      * Recalculates the state of the component.
      */
-    recalculateState(set = true) {
+    recalculateState(credents: Credentials | false) {
         // get credentials
-        const credentials = getCredentials();
         // find out if the user is logged in
         const newState = {
-            loggedIn: !!credentials,
-            username: credentials ? credentials.username : "",
+            loggedIn: !!credents,
+            username: credents ? credents.username : "",
         };
-        // update state if not prevented
-        if (set) this.setState(newState);
+        this.setState(newState);
         // return new state
         return newState;
     }
@@ -47,7 +50,8 @@ class Home extends React.Component<
             next: this.recalculateState,
         });
         // if the user is logged in, subscribe to changes in the user's credentials (e.g. logout)
-        if (getCredentials()) credentialChange.next(getCredentials());
+        let credentials = getCredentials();
+        if (credentials) credentialChange.next(credentials);
     }
     componentWillUnmount() {
         // unsubscribe from subscriptions

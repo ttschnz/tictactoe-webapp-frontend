@@ -9,6 +9,7 @@ import { getCredentials, setCredentials } from "../api/credentials";
 import FlexContainer from "./FlexContainer";
 import { credentialChange, locationChange } from "../utils/subjects";
 import { Subscription } from "rxjs";
+import { Credentials } from "../utils/types";
 /**
  * A header component that can be used to display the header of the application.
  * It displays the logo, the user name and a logout button if the user is logged in.
@@ -46,8 +47,7 @@ class Header extends React.Component<
         this.setState({ url: newUrl });
     }
     // update the state to a new username
-    credentialChange(_arg: any) {
-        const credents = getCredentials();
+    credentialChange(credents: Credentials | false) {
         this.setState({
             username: credents ? credents.username : false,
         });
