@@ -8,7 +8,7 @@ import {
     subscribeGame,
     unsubscribeGame,
 } from "../utils/gameUtils";
-import { gameChange } from "../utils/subjects";
+import { errorSubject, gameChange } from "../utils/subjects";
 
 import { PositionIndex, PostGameInfo, Players } from "../utils/types";
 import FlexContainer from "./FlexContainer";
@@ -127,6 +127,18 @@ class GameField extends React.Component<
     async makeMove(index: PositionIndex): Promise<boolean> {
         console.log("making move", index);
         if (this.props.editable) {
+            // wait 500ms and then check if the move was successful, if not, show a message to reload the page
+            setTimeout(() => {
+                if (
+                    this.state.gameField[index] === undefined ||
+                    this.state.gameField[index] === 0
+                ) {
+                    errorSubject.next(
+                        "Something went wrong, please reload the page"
+                    );
+                }
+            }, 500);
+
             // send the move to the server via the websocket
             let success = await makeMove(this.props.gameId, index);
             if (!success) {
