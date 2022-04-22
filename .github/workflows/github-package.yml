@@ -34,7 +34,7 @@ jobs:
               with:
                   allowUpdates: true
                   name: "Automated Release"
-                  tag: ${{ github.sha }}
+                  tag: "v0.0.0-auto"
                   commit: "master"
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
