@@ -35,7 +35,7 @@ jobs:
               with:
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  tag: "v{{ github.run_id }}"
+                  tag: "v${{ github.run_id }}"
             # - name: Upload Release
             #   uses: ncipollo/release-action@v1
             #   with:
