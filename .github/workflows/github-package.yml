@@ -36,4 +36,4 @@ jobs:
               with:
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  #   tag: "v0.0.${{ github.run_id }}"
+                    tag: "v0.0.${{ github.run_id }}_auto"
