@@ -16,8 +16,6 @@ const config = {
         useSameServer: true,
         // which protocol to use to connect to the api (http: or https:)
         protocol: "http:",
-        // which protocol to use for the websocket (ws: or wss:)
-        socketProtocol: "ws:",
         // the hostname of the api server
         hostname: "localhost",
         // the port to use to connect to the api

@@ -86,7 +86,7 @@ export default class WebSocketConnection {
             : config.server;
 
         this.socket = new WebSocket(
-            `${config.server.socketProtocol}${serverLocation.hostname}:${serverLocation.port}/${config.server.socketPrefix}`
+            `${this.socketProtocol}${serverLocation.hostname}:${serverLocation.port}/${config.server.socketPrefix}`
         );
         this.socket.onopen = () => {
             let pair: listener | undefined;
