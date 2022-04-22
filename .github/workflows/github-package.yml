@@ -30,14 +30,11 @@ jobs:
                   path: "./build"
                   filename: "release.zip"
             - name: Upload Release
-              id: upload-release
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
                   name: "Automated Release"
-                  tag: "v0.0.0-auto"
+                  tag: "v0.0.1-auto"
                   commit: "master"
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Output Context for Debugging
-              run: echo "$GITHUB_CONTEXT"
