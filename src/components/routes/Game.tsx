@@ -2,6 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import {
     gameIdFromHex,
+    gameIdToHex,
     gameStorage,
     loadGame,
     hasAccessToGame,
@@ -53,7 +54,7 @@ class Game extends React.Component<
         // the update will come over the gameChange subject, therefore we don't need to wait for it
         if (!gameStorage.loadGame(this.props.gameId))
             loadGame(this.props.gameId);
-        jsUtils.changeTitle(`Game #${this.props.gameId}`);
+        jsUtils.changeTitle(`Game #${gameIdToHex(this.props.gameId)}`);
     }
     componentWillUnmount() {
         // unsubscribe from the gameChange subject
