@@ -30,6 +30,7 @@ jobs:
                   path: "./build"
                   filename: "release.zip"
             - name: Upload Release
+              id: upload-release
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
@@ -38,3 +39,7 @@ jobs:
                   commit: "master"
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Output the release URL
+              run: |
+              "echo "Release URL:"
+              "echo "{{ steps.upload-release.html_url }}"
