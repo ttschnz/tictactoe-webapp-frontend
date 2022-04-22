@@ -73,7 +73,7 @@ class GameField extends React.Component<
     {
         gameField: PostGameInfo["gameField"] | undefined[];
         players: Players;
-        errrors: boolean[];
+        errors: boolean[];
     }
 > {
     subscriptions: { [key: string]: Subscription } = {};
@@ -82,7 +82,7 @@ class GameField extends React.Component<
         this.state = {
             gameField: this.props.gameField ?? new Array(9).fill(undefined),
             players: { attacker: undefined, defender: undefined },
-            errrors: new Array(9).fill(false),
+            errors: new Array(9).fill(false),
         };
         // bind the makeMove function to the component
         this.makeMove = this.makeMove.bind(this);
@@ -157,24 +157,24 @@ class GameField extends React.Component<
         // set the error flag for the tile
         this.setState((currentState) => {
             // copy the current states error array
-            let newErrors = currentState.errrors.slice();
+            let newErrors = currentState.errors.slice();
             // set the error flag for the tile
             newErrors[index] = true;
             // return the new error array
             return {
-                errrors: newErrors,
+                errors: newErrors,
             };
         });
         // set timeout to reset the error flag
         setTimeout(() => {
             this.setState((currentState) => {
                 // copy the current states error array
-                let newErrors = currentState.errrors.slice();
+                let newErrors = currentState.errors.slice();
                 // set the error flag for the tile
                 newErrors[index] = false;
                 // return the new error array
                 return {
-                    errrors: newErrors,
+                    errors: newErrors,
                 };
             });
         }, 1000);
@@ -189,7 +189,7 @@ class GameField extends React.Component<
                 index={index as PositionIndex}
                 makeMove={this.makeMove}
                 editable={this.props.editable}
-                error={this.state.errrors[index]}
+                error={this.state.errors[index]}
             />
         ));
     }
