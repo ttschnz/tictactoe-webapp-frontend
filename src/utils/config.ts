@@ -27,7 +27,7 @@ const config = {
         // the prefix to use to connect to the websocket (e.g. /ws/)
         socketPrefix: "/ws",
     },
-    // the local environment
-    environment: "DEV",
+    // the environment: development (DEV), staging (STG), production (PROD)
+    environment: "PROD",
 };
 export default config;
