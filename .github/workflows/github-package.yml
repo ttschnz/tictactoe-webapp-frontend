@@ -39,7 +39,5 @@ jobs:
                   commit: "master"
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Output the release URL
-              run: |
-              "echo "Release URL:"
-              "echo "{{ steps.upload-release.html_url }}"
+            - name: Output Context for Debugging
+              run: echo "$GITHUB_CONTEXT"
