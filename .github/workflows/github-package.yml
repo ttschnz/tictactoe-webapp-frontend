@@ -15,6 +15,8 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
             - name: Setup node
               uses: actions/setup-node@v3
               with:
@@ -32,9 +34,6 @@ jobs:
             - name: Upload Release
               uses: ncipollo/release-action@v1
               with:
-                  allowUpdates: true
-                  name: "Automated Release"
-                  tag: "v0.0.0-auto"
-                  commit: "master"
                   artifacts: "release.zip"
                   token: ${{ secrets.GITHUB_TOKEN }}
+                  tag: "v0.0.${{ github.run_id }}_auto"
