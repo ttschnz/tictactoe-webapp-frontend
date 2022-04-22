@@ -81,8 +81,12 @@ export default class WebSocketConnection {
     createSocket() {
         console.log("creating socket");
 
+        let serverLocation = config.server.useSameServer
+            ? window.location
+            : config.server;
+
         this.socket = new WebSocket(
-            `${config.server.socketProtocol}${config.server.hostname}${config.server.socketPrefix}`
+            `${config.server.socketProtocol}${serverLocation.hostname}${config.server.socketPrefix}`
         );
         this.socket.onopen = () => {
             let pair: listener | undefined;
