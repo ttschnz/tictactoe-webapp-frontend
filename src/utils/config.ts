@@ -13,7 +13,7 @@ const config = {
     },
     server: {
         // set to true if the api server is the same as the frontend server
-        useSameServer: false,
+        useSameServer: true,
         // which protocol to use to connect to the api (http: or https:)
         protocol: "http:",
         // which protocol to use for the websocket (ws: or wss:)
