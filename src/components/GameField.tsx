@@ -33,7 +33,8 @@ class GameTile extends React.Component<{
             <div
                 className={classNames(
                     "GameTile",
-                    this.props.editable && "GameTile-Editable"
+                    this.props.editable && "GameTile-Editable",
+                    this.props.error && "GameTile-Error"
                 )}
                 // set the occupier of the tile to the dataset
                 data-occupied-by={
@@ -128,7 +129,7 @@ class GameField extends React.Component<
         console.log("making move", index);
         if (this.props.editable) {
             // wait 500ms and then check if the move was successful, if not, show a message to reload the page
-            setTimeout(() => {
+            let errorId = setTimeout(() => {
                 if (
                     this.state.gameField[index] === undefined ||
                     this.state.gameField[index] === 0
@@ -141,6 +142,7 @@ class GameField extends React.Component<
 
             // send the move to the server via the websocket
             let success = await makeMove(this.props.gameId, index);
+            clearTimeout(errorId);
             if (!success) {
                 console.log("failed to make move");
                 // set the error flag for the tile
@@ -177,7 +179,7 @@ class GameField extends React.Component<
                     errors: newErrors,
                 };
             });
-        }, 1000);
+        }, 400);
     }
     getGameTiles(): JSX.Element[] {
         // map the game field to the game tiles and return them
